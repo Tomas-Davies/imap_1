@@ -1,5 +1,6 @@
 package com.example.imap_proj_1
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -50,6 +51,7 @@ class CreatePersonActivity : ComponentActivity() {
         }
     }
 
+
     override fun onStart() {
         super.onStart()
         Log.w("CREATE_PERSON_ACTIVITY", "onStart")
@@ -78,6 +80,14 @@ class CreatePersonActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Log.w("CREATE_PERSON_ACTIVITY", "onDestroy")
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode==1234) {
+            val sentData = data?.getLongExtra("RESULT", 0)
+            Log.w("Warning", "DATA: $sentData")
+        }
     }
 }
 
@@ -124,6 +134,7 @@ fun FieldsView() {
                 modifier = Modifier.align(Alignment.Start)
             )}
 
+
         TextField(
             value = personBirth,
             onValueChange = { personBirth = it },
@@ -140,6 +151,7 @@ fun FieldsView() {
                 color = Color.Red,
                 modifier = Modifier.align(Alignment.Start)
             )}
+
         Row (
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -155,7 +167,6 @@ fun FieldsView() {
                 onCheckedChange = { checkboxState = !checkboxState}
             )
         }
-
 
         Button(
             onClick = {
@@ -175,10 +186,12 @@ fun FieldsView() {
     }
 }
 
-private fun toNextActivity(ctx: Context, personName: TextFieldValue, personBirth: TextFieldValue){
+private fun toNextActivity(ctx: Context, personName: TextFieldValue, personBirth: TextFieldValue) {
     val intent = Intent(ctx, PersonDetailActivity::class.java).apply {
         putExtra("personName", personName.text)
         putExtra("personBirth", personBirth.text)
     }
-    ctx.startActivity(intent)
+    (ctx as? Activity)?.startActivityForResult(intent, 1234)
+
+    //ctx.startActivity(intent)
 }
